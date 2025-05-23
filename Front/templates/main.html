@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignWave - 수어 번역</title>
+    <link rel="icon" href="/static/images/web_icon.png" type="image/png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.6/dist/web/static/pretendard.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <style>
+        .translation-box-style {
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            min-height: 150px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #6c757d; 
+            background-color: #f8f9fa; 
+        }
+        .translation-box-style:hover {
+            background-color: #e9ecef; 
+            border-color: #5a6268;
+        }
+        #translationPrompt {
+            color: #495057;
+        }
+        #translationOutputInternal strong {
+            color: #0d6efd; 
+        }
+        
+        .loading-spinner-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            color: #495057;
+            padding: 20px 0; 
+        }
+        .loading-spinner-container .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        .translation-trigger-btn {
+            padding: 20px 30px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+        }
+        .translation-trigger-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .translation-trigger-btn .btn-camera-icon { /* img icon */
+            width: 48px; 
+            height: auto; 
+            margin-bottom: 8px;
+        }
+        .translation-trigger-btn span {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        #translationOutputDisplay {
+            border: 1px solid #dee2e6; 
+            background-color: #f8f9fa; 
+        }
+        #translationOutputDisplay strong { 
+            color: #0056b3; 
+        }
+        #initialResultMessage {
+            color: #6c757d; 
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/main">SignWave</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/main">수어 번역</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/speak-to-text">음성 변환</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/mypage">마이페이지</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-4">수어 번역</h5>
+                        
+                        <!-- Mediapipe Camera Section -->
+                        <div class="text-center mb-3" style="display: none;">
+                            <video id="webcam" playsinline autoplay muted style="width: 100%; max-width: 640px; height: auto; border: 1px solid #ccc;"></video>
+                            <canvas id="outputCanvas" style="width: 100%; max-width: 640px; height: auto; border: 1px solid #ccc;"></canvas>
+                        </div>
+
+                        <!-- 번역 시작 버튼 -->
+                        <div class="text-center mt-4 mb-3 d-flex justify-content-center">
+                            <button id="startTranslationButton" class="btn btn-primary btn-lg translation-trigger-btn">
+                                <img src="/static/images/camera_icon.png" alt="Camera Icon" class="btn-camera-icon">
+                                <span class="d-block mt-2">번역 시작</span>
+                            </button>
+                        </div>
+
+                        <!-- 번역 결과 나오는 칸 -->
+                        <div class="translation-result-container mt-4">
+                            <h6 class="text-center mb-3">번역 결과</h6>
+                            <div id="translationOutputDisplay" class="alert alert-light text-center" role="alert" style="min-height: 100px; padding: 15px;">
+                                <span id="initialResultMessage">버튼을 클릭하여 번역을 시작하세요.</span>
+                                <div id="translationResultContent" class="mt-2" style="font-size: 1.1em;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        const startTranslationButton = document.getElementById('startTranslationButton');
+        const translationOutputDisplay = document.getElementById('translationOutputDisplay'); // 결과가 표시될 전체 div
+        const initialResultMessage = document.getElementById('initialResultMessage'); // 초기 안내 메시지 span
+        const translationResultContent = document.getElementById('translationResultContent'); // 실제 번역 결과가 들어갈 내부 div
+
+        let isLoading = false; // API 요청 중복 방지 플래그
+
+        async function initiateGestureTranslation() {
+            if (isLoading) {
+                console.log("Translation process is already in progress.");
+                return;
+            }
+            isLoading = true;
+            startTranslationButton.disabled = true;
+            console.log("Initiating gesture translation via /collect_live API...");
+
+            if (initialResultMessage) initialResultMessage.style.display = 'none';
+            if (translationResultContent) translationResultContent.innerHTML = ''; // 이전 결과 초기화
+            
+            if (translationOutputDisplay) {
+                // 로딩 메시지를 translationOutputDisplay의 내용으로 설정
+                translationOutputDisplay.innerHTML = `
+                    <div class="loading-spinner-container">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 mb-0">번역 중... 서버에서 카메라가 활성화됩니다.</p>
+                        <small>(OpenCV 창에서 'q'를 누르거나 시간이 만료되면 자동으로 종료됩니다)</small>
+                    </div>`;
+            }
+
+            const filenameBase = "web_collection_" + new Date().toISOString().replace(/[:.]/g, "-");
+            const requestData = {
+                filename_base: filenameBase
+            };
+
+            try {
+                const response = await fetch('/collect_live', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (translationOutputDisplay) {
+                    translationOutputDisplay.innerHTML = ''; // 로딩 메시지 제거
+
+                    if(initialResultMessage) translationOutputDisplay.appendChild(initialResultMessage);
+                    if(translationResultContent) translationOutputDisplay.appendChild(translationResultContent);
+                }
+                if (initialResultMessage) initialResultMessage.style.display = 'none'; // 결과 표시 전에는 초기 메시지 숨김
+                if (translationResultContent) translationResultContent.innerHTML = ''; // 내용 초기화
+
+                if (!response.ok) {
+                    let errorDetailMessage = `서버 오류 (${response.status})`;
+                    try {
+                        const errorData = await response.json();
+                        errorDetailMessage = errorData.detail || errorDetailMessage;
+                    } catch (e) {
+                        errorDetailMessage = response.statusText || errorDetailMessage;
+                    }
+                    console.error('Server error from /collect_live:', errorDetailMessage);
+                    throw new Error(errorDetailMessage);
+                }
+
+                const result = await response.json();
+                console.log("/collect_live API response:", result);
+
+                if (result.translated_gestures && result.translated_gestures.length > 0) {
+                    const formattedResults = "<strong>번역 결과:</strong><br>" + result.translated_gestures.join('<br>');
+                    if (translationResultContent) translationResultContent.innerHTML = formattedResults;
+                } else {
+                    if (translationResultContent) translationResultContent.innerHTML = '감지된 제스처가 없습니다. 카메라 앞에서 다시 시도해주세요.';
+                }
+
+            } catch (error) {
+                console.error("Error calling /collect_live API:", error);
+                if (translationResultContent) {
+                    translationResultContent.innerHTML = `<span style="color: red; font-weight: bold;">번역 요청 실패:</span><br><span style="color: #dc3545;">${error.message}</span><br><small>잠시 후 다시 시도해주세요. (서버 로그 확인 필요)</small>`;
+                }
+            } finally {
+                isLoading = false;
+                startTranslationButton.disabled = false;
+                
+                // 결과가 없거나 오류 발생 시 초기 메시지 다시 표시, 아니면 숨김
+                if (translationResultContent && translationResultContent.innerHTML && !translationResultContent.innerHTML.includes('<strong>번역 결과:</strong>')) {
+                     if (initialResultMessage) initialResultMessage.style.display = 'block';
+                     if (translationResultContent) translationResultContent.innerHTML = ''; // 오류/결과없음 시 실제 결과 내용은 비움
+                } else if (translationResultContent && translationResultContent.innerHTML.includes('<strong>번역 결과:</strong>')) {
+                     if (initialResultMessage) initialResultMessage.style.display = 'none';
+                } else { 
+                     if (initialResultMessage) initialResultMessage.style.display = 'block';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOM fully loaded. Setting up start translation button listener.");
+            if (startTranslationButton) {
+                startTranslationButton.addEventListener('click', initiateGestureTranslation);
+            } else {
+                console.error("Element with ID 'startTranslationButton' not found.");
+            }
+            if (initialResultMessage) initialResultMessage.style.display = 'block';
+            if (translationResultContent) translationResultContent.innerHTML = '';
+        });
+    </script>
+</body>
+</html> 

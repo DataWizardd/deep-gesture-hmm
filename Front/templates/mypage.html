@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignWave - 마이페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.6/dist/web/static/pretendard.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/main">SignWave</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/main">수어 번역</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/speak-to-text">음성 변환</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/mypage">마이페이지</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-user"></i> 프로필</h5>
+                        <div class="text-center mb-3">
+                            <img src="https://via.placeholder.com/150" class="rounded-circle profile-image" alt="프로필 이미지">
+                        </div>
+                        <h6 class="text-center">사용자 이름</h6>
+                        <p class="text-center text-muted">카카오 계정</p>
+                        <div class="text-center mt-3">
+                            <a href="/logout" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt"></i> 로그아웃
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-cog"></i> 설정</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <a href="#" class="text-decoration-none text-dark">
+                                    <i class="fas fa-bell"></i> 알림 설정
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="#" class="text-decoration-none text-dark">
+                                    <i class="fas fa-lock"></i> 개인정보 관리
+                                </a>
+                            </li>
+                            <li class="list-group-item">
+                                <a href="#" class="text-decoration-none text-dark">
+                                    <i class="fas fa-question-circle"></i> 도움말
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0"><i class="fas fa-history"></i> 최근 활동</h5>
+                            <button class="btn btn-outline-danger btn-sm" id="resetHistory">
+                                <i class="fas fa-trash"></i> 기록 초기화
+                            </button>
+                        </div>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="sign-tab" data-bs-toggle="tab" data-bs-target="#sign" type="button" role="tab">수어 번역 기록</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="voice-tab" data-bs-toggle="tab" data-bs-target="#voice" type="button" role="tab">음성 변환 기록</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content mt-3" id="myTabContent">
+                            <div class="tab-pane fade show active" id="sign" role="tabpanel">
+                                <div class="list-group" id="signHistory">
+                                    <div class="history-item">
+                                        <div class="content">안녕하세요</div>
+                                        <div class="meta">
+                                            <span>3시간 전</span>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="1">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="history-item">
+                                        <div class="content">감사합니다</div>
+                                        <div class="meta">
+                                            <span>1일 전</span>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="2">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="voice" role="tabpanel">
+                                <div class="list-group" id="voiceHistory">
+                                    <div class="history-item">
+                                        <div class="content">오늘 날씨가 좋네요</div>
+                                        <div class="meta">
+                                            <span>5시간 전</span>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="3">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="history-item">
+                                        <div class="content">점심 식사 하셨나요?</div>
+                                        <div class="meta">
+                                            <span>2일 전</span>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="4">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0"><i class="fas fa-star"></i> 자주 쓰는 문구</h5>
+                            <button class="btn btn-outline-danger btn-sm" id="resetPhrases">
+                                <i class="fas fa-trash"></i> 초기화
+                            </button>
+                        </div>
+                        <div class="list-group" id="frequentPhrases">
+                            <div class="history-item">
+                                <div class="content">안녕하세요, 반갑습니다</div>
+                                <div class="meta">
+                                    <span>10회 사용</span>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="5">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="history-item">
+                                <div class="content">오늘 날씨가 정말 좋네요</div>
+                                <div class="meta">
+                                    <span>5회 사용</span>
+                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="6">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 삭제 버튼 클릭 이벤트
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const item = this.closest('.history-item');
+                if (confirm('정말 삭제하시겠습니까?')) {
+                    item.remove();
+                }
+            });
+        });
+
+        // 기록 초기화 버튼 클릭 이벤트
+        document.getElementById('resetHistory').addEventListener('click', function() {
+            if (confirm('모든 기록을 초기화하시겠습니까?')) {
+                document.getElementById('signHistory').innerHTML = '';
+                document.getElementById('voiceHistory').innerHTML = '';
+            }
+        });
+
+        // 자주 쓰는 문구 초기화 버튼 클릭 이벤트
+        document.getElementById('resetPhrases').addEventListener('click', function() {
+            if (confirm('자주 쓰는 문구를 모두 초기화하시겠습니까?')) {
+                document.getElementById('frequentPhrases').innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html> 
