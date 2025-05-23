@@ -1,0 +1,15 @@
+[Unit]
+Description=SignWave Web Application
+After=network.target
+
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/app/server
+Environment="PATH=/home/ubuntu/app/venv/bin"
+EnvironmentFile=/home/ubuntu/app/server/.env
+ExecStart=/home/ubuntu/app/venv/bin/gunicorn -c gunicorn_config.py app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target 
