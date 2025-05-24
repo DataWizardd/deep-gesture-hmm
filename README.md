@@ -9,7 +9,7 @@
 
 ### 사용 기술
 - **MediaPipe Hands**  
-  Google의 MediaPipe 모델을 이용하여 손가락 21개 랜드마크(x, y, z)를 실시간으로 추출합니다.  
+  Google의 MediaPipe 모델을 이용하여 손가락 21개 랜드마크(x, y, z)를 실시간으로 추출
 
   <img src="https://github.com/user-attachments/assets/6110e708-73ef-4c0f-a703-d71e272d67ea" width="250"/>
 
