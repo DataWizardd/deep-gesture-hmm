@@ -1,7 +1,5 @@
-# 🤖 Sign_Translator
-
 ## 📌 개요
-**딥러닝의 시계열 데이터 모델링을 보강한 수화 인식 연구**
+**딥러닝과 은닉 마르코프 모델을 연계한 연속적인 손 제스처 적출에 관한 연구**
 
 ---
 
@@ -36,10 +34,12 @@
 ---
 
 ### 🧪 Result
-- 9개의 제스처에 대해 무작위로 3개 이상의 동작을 진행하여 인식률 Test 진행  
 
-  <img src="https://github.com/user-attachments/assets/38b343d0-d5ef-4381-b9b1-9ccd4bb5f6e6" width="500"/>  
-  <img src="https://github.com/user-attachments/assets/e45555cb-a722-48aa-ac0c-d66b09b0b485" width="500"/>
+
+  <img width="395" height="222" alt="image" src="https://github.com/user-attachments/assets/c5a58d94-2316-4273-809c-a8a00c0a6712" />
+
+  <img width="547" height="185" alt="image" src="https://github.com/user-attachments/assets/6e2bc746-fb7e-485d-b0d8-db07cb0d20dd" />
+
 
 ---
 
