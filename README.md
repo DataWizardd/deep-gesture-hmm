@@ -35,7 +35,8 @@
 
 ### 🧪 Result
 
-
+- 연속 손동작에서 제스처를 98.08%의 인식률과 5.60%의 단어오류율(WER)로 적출
+- 
   <img width="395" height="222" alt="image" src="https://github.com/user-attachments/assets/c5a58d94-2316-4273-809c-a8a00c0a6712" />
 
   <img width="547" height="185" alt="image" src="https://github.com/user-attachments/assets/6e2bc746-fb7e-485d-b0d8-db07cb0d20dd" />
