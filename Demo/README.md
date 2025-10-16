@@ -6,4 +6,5 @@ conda activate gesture-rt
 pip install -r requirements.txt
 
 # 3) 실행 : 프로젝트 루트에서
-python -m main_5
+
+python -m main_251016
